@@ -1,6 +1,9 @@
 # easily use http
 ```
-    安装方法: npm install net-helper
+安装方法: npm install net-helper -S
+使用方法:
+    1. await shttp.get('http://www.baidu.com').query({search:'test'}).end(cb);
+    2.const res = await shttp.get('some url return json').type('json').query({search:'test'}).end();
 ```
 ## 2017-12-6 21:03:37
 ```
