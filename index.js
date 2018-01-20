@@ -64,16 +64,7 @@ class shttp {
      * @param {string|object} o 请求的search部分
      */
     query(o) {
-        if (typeof o === 'string') {
-            this.uri.search = o;
-        }
-        if (typeof o === 'object') {
-            let str = '';
-            for (let k in o) {
-                str += k + '=' + o[k];
-            }
-            this.uri.search = str.substring(1);
-        }
+        this.uri.search = str;
         return this;
     }
     /**
@@ -126,9 +117,24 @@ class shttp {
         this.uri = new URI(url);
         return this;
     }
-    end() {
+    async end(cb) {
         this.options.uri = this.uri.href;
-        return request(this.options);
+        let res, err = null;
+        try {
+            res = await request(this.options);
+        } catch(e) {
+            err = e;
+        }
+        if(typeof cb === 'function') {
+            cb(err, res);
+        }
+        return new Promise(function(resolve, reject){
+            if(err){
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     }
 }
 
