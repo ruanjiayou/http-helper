@@ -29,14 +29,13 @@ class shttp {
         };
     }
     /**
-     * application/json 
-     * form x-www-form-urlencoded application/json multipart/form-data
+     * application/json json
      */
     type(type) {
         switch (type.toLowerCase()) {
             case 'json': this.options.json = true; break;
             case 'application/json': this.options.json = true; break;
-            case 'multipart/form-data': this.set('content-type', 'multipart/form-data');
+            //case 'multipart/form-data': this.set('content-type', 'multipart/form-data');
             //application/x-www-form-urlencoded
             default: break;
         }
@@ -44,6 +43,7 @@ class shttp {
     }
     /**
      * 设置header
+     * form x-www-form-urlencoded multipart/form-data
      * @param {string|object} v1 
      * @param {string} [v2]
      */
@@ -145,13 +145,15 @@ class shttp {
             } else {
                 delete this.options.formData;
             }
-            res = await request(this.options);
-            if(res == undefined) {
-                res = {};
-                throw new Error('response is undefined');
+            if (this.options.body) {
+                this.options.json = true;
             }
+            res = await request(this.options);
         } catch (e) {
             err = e;
+        }
+        if (res.headers['content-type'] === 'application/json') {
+            res.body = JSON.parse(res.body);
         }
         if (res && typeof cb === 'function') {
             cb(err, res.body, res.headers);

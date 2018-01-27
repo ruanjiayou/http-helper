@@ -25,11 +25,11 @@ http.createServer(function (request, response) {
             response.writeHead(200, { 'Content-Type': 'text/plain' });
             response.end('Hello World\n');
             break;
-        case '/image': 
+        case '/image':
             let mimetype = mime.getType(downimagepath);
-            response.writeHead(200, { 
+            response.writeHead(200, {
                 'Content-Type': mimetype,
-                'Content-disposition': `attachment; filename*=utf-8''${encodeURIComponent('兔女郎.'+ mime.getExtension(mimetype))}`
+                'Content-disposition': `attachment; filename*=utf-8''${encodeURIComponent('兔女郎.' + mime.getExtension(mimetype))}`
             });
             const stream = fs.createReadStream(downimagepath);
             stream.pipe(response);
@@ -65,13 +65,15 @@ describe('测试shttp()', function () {
     it('json:', async function () {
         await shttp
             .get(`${url_prefix}/json`)
-            .type('json')
+            //.type('json')
             .end(function (err, res, headers) {
                 if (err) {
                     console.log(Object.keys(err));
                     console.log(err.statusCode, '----------------------');
                     console.log(err.message, '******************************');
                 } else {
+                    console.log(headers, '======');
+                    console.log(typeof res);
                     assert.deepEqual({
                         "name": "nodejs",
                         "value": "stone"
@@ -79,7 +81,7 @@ describe('测试shttp()', function () {
                 }
             });
     });
-    it('image:', async function(){
+    it('image:', async function () {
         await shttp
             .get(`${url_prefix}/image`)
             .end(function (err, res, headers) {
@@ -100,8 +102,8 @@ describe('测试shttp()', function () {
         await shttp
             .post(`${test_url}/auth/admin/login`)
             .send({ account: '123456789@qq.com', password: 'e10adc3949ba59abbe56e057f20f883e' })
-            .end(function(err, res, headers){
-                if(err) {
+            .end(function (err, res, headers) {
+                if (err) {
                     console.log(err.message);
                 } else {
                     token = `${res.result.type} ${res.result.token}`;
@@ -110,8 +112,10 @@ describe('测试shttp()', function () {
             });
         await shttp
             .post(`${test_url}/admin/author/2244/upload-avatar`)
-            .type('multipart/form-data')
-            .set('authorization', token)
+            .set({
+                'authorization': token,
+                'content-type': 'multipart/form-data'
+            })
             .send({ name: 'ruanjiayou' })
             .attach({ file: uploadfilepath })
             .end(function (err, res, headers) {
@@ -120,7 +124,7 @@ describe('测试shttp()', function () {
                 } else {
                     //console.log(res);
                 }
-                //process.exit();
+                process.exit();
             });
     });
 

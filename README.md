@@ -5,7 +5,6 @@
     const shttp = require('net-helper').shttp;
     shttp
         .post('http://www.baidu.com')
-        .type('json') // 返回的是json
         //.attach({ file: 'c:/desktop/test.png' })//上传的文件
         .query({ name: 'xxx', password: 'yyy' })
         .send({ email: 'xxxx' })
@@ -24,11 +23,11 @@
 - patch() patch请求
 - put() put请求
 - delete() delete请求
-- type() 设置请求的格式 multipart/form-data(这种可以上传文件)或x-www-form-urlencoded,设置json代表预期返回值是json(这是个bug要改)
-- set() 设置请求头
+- ~~type() 设置请求的格式 json(主要是声明返回的也是json)~~ 根据响应头content-type判断是否使用JSON.parse()
+- set() 设置请求头(可以设置表单文件的提交方式)
+- attach() 上传文件
 - query() 设置search字符串
-- send() 设置请求的body数据
-- attach() 上传文件(type类型要求必须是multipart/form-data)
+- send() 设置请求的body数据(options.json一定为true!!!)
 - end() 发送请求,返回请求结果,同样接受回调函数参数
 #### 2017-12-17 18:13:43
 ```
