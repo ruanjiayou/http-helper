@@ -122,9 +122,10 @@ class shttp {
         return this;
     }
     async end(cb) {
-        let res, err = null;
+        let res = {}, err = null;
         this.options.uri = this.uri.href;
         try {
+            // 表单及文件处理
             if (this.options.headers['content-type'] === 'multipart/form-data') {
                 let body = this.options.body,
                     form = this.options.formData = {};
@@ -150,12 +151,18 @@ class shttp {
             }
             res = await request(this.options);
         } catch (e) {
-            err = e;
+            //400竟然跳到这里
+            if(typeof e.statusCode === 'number') {
+                res.statusCode = e.statusCode;
+                res = e.response;
+            } else {
+                err = e;
+            }
         }
-        if (res.headers['content-type'] === 'application/json') {
+        if (typeof res.body === 'string' && res.headers['content-type'].indexOf('application/json')!==-1) {
             res.body = JSON.parse(res.body);
         }
-        if (res && typeof cb === 'function') {
+        if (typeof cb === 'function') {
             cb(err, res.body, res.headers);
         }
         return new Promise(function (resolve, reject) {
