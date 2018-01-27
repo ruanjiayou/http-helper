@@ -26,6 +26,7 @@
     "uri-parser-helper": "0.0.1"
   },
   "dependencies": {
+    "mime": "^2.2.0",
     "request": "^2.83.0"
   }
 }
