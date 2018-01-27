@@ -6,7 +6,8 @@ const mime = require('mime');
 const fs = require('fs');
 const url_prefix = 'http://localhost:8888';
 
-console.log('文件上传功能是通过express实现的 multer bodyParser等 ')
+console.log('文件上传功能是通过express实现的 multer bodyParser等 ');
+
 let uploadfilepath = 'C:/Users/sophsis/Desktop/test.txt';
 let downimagepath = 'C:/Users/sophsis/Desktop/1.jpg';
 http.createServer(function (request, response) {
@@ -87,8 +88,9 @@ describe('测试shttp()', function () {
                     console.log(err.statusCode, '----------------------');
                     console.log(err.message, '******************************');
                 } else {
-                    console.log(res.length);
-                    console.log(headers);
+                    assert.equal('number', typeof res.length);
+                    //console.log(res.length);
+                    //console.log(headers);
                 }
             });
     });
@@ -103,7 +105,7 @@ describe('测试shttp()', function () {
                     console.log(err.message);
                 } else {
                     token = `${res.result.type} ${res.result.token}`;
-                    console.log(token);
+                    //console.log(token);
                 }
             });
         await shttp
@@ -116,7 +118,7 @@ describe('测试shttp()', function () {
                 if (err) {
                     console.log(err.message);
                 } else {
-                    console.log(res);
+                    //console.log(res);
                 }
                 //process.exit();
             });

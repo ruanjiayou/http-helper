@@ -33,7 +33,6 @@ class shttp {
      * form x-www-form-urlencoded application/json multipart/form-data
      */
     type(type) {
-        //TODO:默认
         switch (type.toLowerCase()) {
             case 'json': this.options.json = true; break;
             case 'application/json': this.options.json = true; break;
@@ -138,7 +137,7 @@ class shttp {
                         value: fs.createReadStream(this.files[k]),
                         options: {
                             filename: filename,
-                            contentType: path.extname(filename)
+                            contentType: mime.getType(path.extname(filename))
                         }
                     };
                 }
@@ -147,10 +146,14 @@ class shttp {
                 delete this.options.formData;
             }
             res = await request(this.options);
+            if(res == undefined) {
+                res = {};
+                throw new Error('response is undefined');
+            }
         } catch (e) {
             err = e;
         }
-        if (typeof cb === 'function') {
+        if (res && typeof cb === 'function') {
             cb(err, res.body, res.headers);
         }
         return new Promise(function (resolve, reject) {
