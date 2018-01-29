@@ -151,15 +151,17 @@ class shttp {
             }
             res = await request(this.options);
         } catch (e) {
+            // 算了,只要不是200就是error
+            err = e;
             //400竟然跳到这里
-            if(typeof e.statusCode === 'number') {
-                res.statusCode = e.statusCode;
-                res = e.response;
-            } else {
-                err = e;
-            }
+            // if(typeof e.statusCode === 'number') {
+            //     res.statusCode = e.statusCode;
+            //     res = e.response;
+            // } else {
+            //     err = e;
+            // }
         }
-        if (typeof res.body === 'string' && res.headers['content-type'].indexOf('application/json')!==-1) {
+        if (typeof res.body === 'string' && res.headers['content-type'].indexOf('application/json') !== -1) {
             res.body = JSON.parse(res.body);
         }
         if (typeof cb === 'function') {

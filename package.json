@@ -1,14 +1,14 @@
 {
   "name": "net-helper",
-  "version": "1.0.3",
-  "description": "```\r 2017-12-6 21:03:37\r 方便的使用http的GET/POST/PUT/DELETE\r ```\r ## 2017-12-17 18:13:43\r ```\r     仓库改名:http-helper--->net\r ```",
+  "version": "1.0.4",
+  "description": "方便的使用http的GET/POST/PUT/DELETE",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "\u0016https://github.com/ruanjiayou/net.git"
+    "url": "https://github.com/ruanjiayou/net.git"
   },
   "keywords": [
     "net",
@@ -23,7 +23,7 @@
   "devDependencies": {
     "iconv-lite": "^0.4.19",
     "request-promise": "^4.2.2",
-    "uri-parser-helper": "0.0.1"
+    "uri-parser-helper": "1.0.5"
   },
   "dependencies": {
     "mime": "^2.2.0",
