@@ -1,6 +1,6 @@
 {
   "name": "net-helper",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "方便的使用http的GET/POST/PUT/DELETE",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "devDependencies": {
     "iconv-lite": "^0.4.19",
     "request-promise": "^4.2.2",
-    "uri-parser-helper": "1.0.5"
+    "uri-parser-helper": "1.0.6"
   },
   "dependencies": {
     "mime": "^2.2.0",
