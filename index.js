@@ -12,20 +12,30 @@ class shttp {
         this.uri = new URI('http://127.0.0.1');
         this.files = {};
         this.options = {
-            method: 'GET',
-            uri: '',
+            //method: 'GET',
+            //uri: '',
             //body: {},
             //formData: {},
-            //json: true,
-            resolveWithFullResponse: true,
-            headers: {
-                "Accept": "text/html,image/*,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Encoding": "gzip, deflate",
-                "Accept-Language": "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
-                "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1",
-                "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0"
-            }
+            //json: true,,
+            //headers: {}
+            resolveWithFullResponse: true
+        };
+    }
+    /**
+     * 不清空会有问题
+     */
+    clear(type) {
+        this.options.method = type;
+        this.files = {};
+        this.options.body = {};
+        this.options.formData = {};
+        this.options.headers = {
+            "Accept": "text/html,image/*,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0"
         };
     }
     /**
@@ -59,8 +69,8 @@ class shttp {
         return this;
     }
     attach(name, filepath) {
-        this.set('content-type', 'multipart/form-data');
         let files = {};
+        this.set('content-type', 'multipart/form-data');
         if (typeof name === 'string') {
             files[name] = filepath;
         } else {
@@ -85,7 +95,6 @@ class shttp {
      * @param {string} [v2]
      */
     send(v1, v2) {
-        this.options.body = {};
         if (typeof v1 === 'string' && typeof v2 === 'string') {
             this.options.body[v1] = v2;
         }
@@ -97,27 +106,27 @@ class shttp {
         return this;
     }
     get(url) {
-        this.options.method = 'GET';
+        this.clear('GET');
         this.uri = new URI(url);
         return this;
     }
     patch(url) {
-        this.options.method = 'PATCH';
+        this.clear('PATCH');
         this.uri = new URI(url);
         return this;
     }
     post(url) {
-        this.options.method = 'POST';
+        this.clear('POST');
         this.uri = new URI(url);
         return this;
     }
     put(url) {
-        this.options.method = 'PUT';
+        this.clear('PUT');
         this.uri = new URI(url);
         return this;
     }
     delete(url) {
-        this.options.method = 'DELETE';
+        this.clear('DELETE');
         this.uri = new URI(url);
         return this;
     }
@@ -165,7 +174,7 @@ class shttp {
             res.body = JSON.parse(res.body);
         }
         if (typeof cb === 'function') {
-            cb.call((err ? err : res), err, res.body, res.headers);
+            cb(err, res.body, res.headers);
         }
         return new Promise(function (resolve, reject) {
             if (err) {
