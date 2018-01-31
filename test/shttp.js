@@ -36,7 +36,10 @@ http.createServer(function (request, response) {
             stream.on('end', function () {
                 response.end();
             });
-
+            break;
+        case '/error':
+            response.writeHead(400, { 'Content-Type': 'application/json' });
+            response.end(JSON.stringify({ message: 'test 400 error'}));
             break;
         default:
             response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -45,7 +48,7 @@ http.createServer(function (request, response) {
     }
 }).listen(8888);
 // 终端打印如下信息  
-console.log(`Server running at ${url_prefix}`);
+console.log(`临时测试服务器地址: ${url_prefix}`);
 
 describe('测试shttp()', function () {
     it('text:', async function () {
@@ -69,16 +72,34 @@ describe('测试shttp()', function () {
             .end(function (err, res, headers) {
                 if (err) {
                     console.log(Object.keys(err));
-                    console.log(err.statusCode, '----------------------');
-                    console.log(err.message, '******************************');
+                    console.log(err.statusCode);
+                    console.log(err.message);
                 } else {
-                    console.log(headers, '======');
-                    console.log(typeof res);
+                    assert.equal('application/json', headers['content-type']);
+                    assert.equal(200, this.statusCode);
                     assert.deepEqual({
                         "name": "nodejs",
                         "value": "stone"
                     }, res);
                 }
+            });
+    });
+    it('error:', async function(){
+        await shttp
+            .get(`${url_prefix}/error`)
+            .type('json')
+            .end(function(err, res){
+                assert.equal(400, this.statusCode);
+                if(err) {
+                    assert.deepEqual({
+                        message: 'test 400 error'
+                    }, err);
+                } else {
+                    console.log(res);
+                }
+            })
+            .catch(function(err){
+                console.log(err.message);
             });
     });
     it('image:', async function () {

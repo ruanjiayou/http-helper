@@ -165,7 +165,7 @@ class shttp {
             res.body = JSON.parse(res.body);
         }
         if (typeof cb === 'function') {
-            cb(err, res.body, res.headers);
+            cb.call((err ? err : res), err, res.body, res.headers);
         }
         return new Promise(function (resolve, reject) {
             if (err) {
