@@ -39,7 +39,7 @@ http.createServer(function (request, response) {
             break;
         case '/error':
             response.writeHead(400, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({ message: 'test 400 error'}));
+            response.end(JSON.stringify({ message: 'test 400 error' }));
             break;
         default:
             response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -65,10 +65,10 @@ describe('测试shttp()', function () {
                 }
             });
     });
+
     it('json:', async function () {
         await shttp
             .get(`${url_prefix}/json`)
-            //.type('json')
             .end(function (err, res, headers) {
                 if (err) {
                     console.log(Object.keys(err));
@@ -76,7 +76,6 @@ describe('测试shttp()', function () {
                     console.log(err.message);
                 } else {
                     assert.equal('application/json', headers['content-type']);
-                    assert.equal(200, this.statusCode);
                     assert.deepEqual({
                         "name": "nodejs",
                         "value": "stone"
@@ -84,22 +83,16 @@ describe('测试shttp()', function () {
                 }
             });
     });
-    it('error:', async function(){
+    it('error:', async function () {
         await shttp
             .get(`${url_prefix}/error`)
             .type('json')
-            .end(function(err, res){
-                assert.equal(400, this.statusCode);
-                if(err) {
-                    assert.deepEqual({
-                        message: 'test 400 error'
-                    }, err);
+            .end(function (err, res) {
+                if (err) {
+                    assert.equal(400, err.statusCode);
                 } else {
-                    console.log(res);
+                    console.log(object.keys(res));
                 }
-            })
-            .catch(function(err){
-                console.log(err.message);
             });
     });
     it('image:', async function () {
@@ -148,7 +141,6 @@ describe('测试shttp()', function () {
                 process.exit();
             });
     });
-
 });
 
 //process.exit();

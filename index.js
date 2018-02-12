@@ -11,24 +11,18 @@ class shttp {
     constructor() {
         this.uri = new URI('http://127.0.0.1');
         this.files = {};
-        this.options = {
-            //method: 'GET',
-            //uri: '',
-            //body: {},
-            //formData: {},
-            //json: true,,
-            //headers: {}
-            resolveWithFullResponse: true
-        };
+        this.options = {};
     }
     /**
      * 不清空会有问题
      */
     clear(type) {
+        this.options = new Object();
         this.options.method = type;
         this.files = {};
         this.options.body = {};
         this.options.formData = {};
+        this.options.resolveWithFullResponse = true;
         this.options.headers = {
             "Accept": "text/html,image/*,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate",
@@ -95,12 +89,24 @@ class shttp {
      * @param {string} [v2]
      */
     send(v1, v2) {
-        if (typeof v1 === 'string' && typeof v2 === 'string') {
-            this.options.body[v1] = v2;
-        }
-        if (typeof v1 === 'object') {
-            for (let k in v1) {
-                this.options.body[k] = v1[k];
+        if (this.options.method === 'GET') {
+            if (typeof v1 === 'string' && typeof v2 === 'string') {
+                this.uri.search = `${v1}=${v2}`;
+            }
+            if (typeof v1 === 'object') {
+                this.uri.search = v1;
+            }
+        } else {
+            if (this.options.body === undefined) {
+                this.options.body = {};
+            }
+            if (typeof v1 === 'string' && typeof v2 === 'string') {
+                this.options.body[v1] = v2;
+            }
+            if (typeof v1 === 'object') {
+                for (let k in v1) {
+                    this.options.body[k] = v1[k];
+                }
             }
         }
         return this;
@@ -131,13 +137,14 @@ class shttp {
         return this;
     }
     async end(cb) {
-        let res = {}, err = null;
+        let res = {}, err = null, options = {};
         this.options.uri = this.uri.href;
+        options = this.options;
         try {
             // 表单及文件处理
-            if (this.options.headers['content-type'] === 'multipart/form-data') {
-                let body = this.options.body,
-                    form = this.options.formData = {};
+            if (options.headers['content-type'] === 'multipart/form-data') {
+                let body = options.body,
+                    form = options.formData = {};
                 for (let k in body) {
                     form[k] = body[k];
                 }
@@ -151,14 +158,14 @@ class shttp {
                         }
                     };
                 }
-                delete this.options.body;
+                delete options.body;
             } else {
-                delete this.options.formData;
+                delete options.formData;
             }
-            if (this.options.body) {
-                this.options.json = true;
+            if (options.body) {
+                options.json = true;
             }
-            res = await request(this.options);
+            res = await request(options);
         } catch (e) {
             // 算了,只要不是200就是error
             err = e;
@@ -174,15 +181,9 @@ class shttp {
             res.body = JSON.parse(res.body);
         }
         if (typeof cb === 'function') {
-            cb(err, res.body, res.headers);
+            cb.call(err ? err : res, err, res.body, res.headers);
         }
-        return new Promise(function (resolve, reject) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        return err ? err : res;
     }
 }
 

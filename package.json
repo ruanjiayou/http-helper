@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "mime": "^2.2.0",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "uri-parser-helper": "https://github.com/ruanjiayou/uri.git"
   }
 }
