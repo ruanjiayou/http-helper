@@ -4,12 +4,12 @@ const http = require('http');
 const path = require('path');
 const mime = require('mime');
 const fs = require('fs');
-const url_prefix = 'http://localhost:8888';
+const url_prefix = 'http://localhost:8888'; 0
 
 console.log('文件上传功能是通过express实现的 multer bodyParser等 ');
 
-let uploadfilepath = 'C:/Users/sophsis/Desktop/test.txt';
-let downimagepath = 'C:/Users/sophsis/Desktop/1.jpg';
+let uploadfilepath = 'C:/Users/max/Desktop/proxy.bat';
+let downimagepath = 'C:/Users/max/Desktop/1.jpg';
 http.createServer(function (request, response) {
   switch (request.url) {
     case '/json':
@@ -88,9 +88,12 @@ describe('测试shttp()', function () {
       .get(`${url_prefix}/error`)
       .end(function (err, res) {
         if (err) {
+          console.log(err, 'test error');
+          console.log(Object.keys(err));
           assert.equal(400, err.statusCode);
         } else {
-          console.log(object.keys(res));
+          console.log(res, 'res');
+          assert.equal('test 400 error', res.message);
         }
       });
   });
@@ -125,7 +128,7 @@ describe('测试shttp()', function () {
       });
     await shttp
       .post(`${test_url}/admin/author/2244/upload-avatar`)
-      .set({
+      .header({
         'authorization': token,
         'content-type': 'multipart/form-data'
       })

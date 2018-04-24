@@ -1,4 +1,3 @@
-const URI = require('uri-parser-helper');
 const request = require('request-promise');
 const isOnline = require('./lib/isOnline');
 const getHTML = require('./lib/getHTML');
@@ -8,11 +7,11 @@ const mime = require('mime');
 
 class rp {
   constructor(url, method = 'GET') {
-    this.uri = new URI(url);
+    this.uri = url;
+    this.qs = {};
     this.files = {};
     this.method = method;
     this.body = {};
-    this.formData = {};
     this.headers = {
       "Accept": "text/html,image/*,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Encoding": "gzip, deflate",
@@ -24,11 +23,11 @@ class rp {
   }
   /**
    * 设置header
-   * form x-www-form-urlencoded multipart/form-data
+   * 表单 application/x-www-form-urlencoded x-www-form-urlencoded 文件 multipart/form-data json格式: json: true
    * @param {string|object} v1 
    * @param {string} [v2]
    */
-  set(v1, v2) {
+  header(v1, v2) {
     if (typeof v1 === 'string' && typeof v2 === 'string') {
       this.headers[v1] = v2;
     }
@@ -41,7 +40,7 @@ class rp {
   }
   attach(name, filepath) {
     let files = {};
-    this.set('content-type', 'multipart/form-data');
+    this.header('Content-Type', 'multipart/form-data');
     if (typeof name === 'string') {
       files[name] = filepath;
     } else {
@@ -53,11 +52,15 @@ class rp {
     return this;
   }
   /**
-   * 设置get请求的search
+   * 设置get请求的search 不能直接传k1=v1&k2=v2
    * @param {string|object} o 请求的search部分
    */
   query(o) {
-    this.uri.search = o;
+    if (typeof v1 === 'string' && typeof v2 === 'string') {
+      this.qs[v1] = v2;
+    } else {
+      this.qs = o;
+    }
     return this;
   }
   /**
@@ -65,33 +68,35 @@ class rp {
    * @param {string|object} v1 
    * @param {string} [v2]
    */
-  send(data) {
-    this.body = data;
+  send(v1, v2) {
+    if (typeof v1 === 'string' && typeof v2 === 'string') {
+      this.body[v1] = v2;
+    }
+    if (typeof v1 === 'object') {
+      for (let k in v1) {
+        this.body[k] = v1[k];
+      }
+    }
     return this;
   }
   async end(cb) {
-    let res = {}, err = null, isPP = this.method !== 'GET';
+    let res = {}, err = null;
     let opts = {
-      uri: this.uri.href,
+      uri: this.uri,
       method: this.method,
       headers: this.headers,
+      simple: false,
       resolveWithFullResponse: true,
-      body: this.body
+      options: {}
     };
-    if (isPP) {
-      opts.json = true;
-    } else {
-      delete opts.body;
-    }
     try {
       // 表单及文件处理
-      let type = opts.headers['Content-Type'] || opts.headers['content-type'];
+      let type = opts.headers['Content-Type'];
       if (type === 'multipart/form-data') {
-        opts.formData = this.data;
-        delete opts.body;
+        opts.options.formData = this.body;
         for (let k in this.files) {
           let filename = path.basename(this.files[k]);
-          opts.formData[k] = {
+          opts.options.formData[k] = {
             value: fs.createReadStream(this.files[k]),
             options: {
               filename: filename,
@@ -99,9 +104,15 @@ class rp {
             }
           };
         }
+      } else if (opts.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+        opts.options.form = this.body;
+      } else {
+        opts.options.body = this.body;
+        opts.options.json = true;
       }
       res = await request(opts);
     } catch (e) {
+      // simple=false 就没问题了!!!
       // 算了,只要不是200就是error
       err = e;
       //400竟然跳到这里
@@ -113,13 +124,14 @@ class rp {
       // }
     }
     if (typeof res.body === 'string' && res.headers) {
+      // 有些lowB不大写
       let type = res.headers['Content-Type'] || res.headers['content-type'];
       if (type.indexOf('application/json') !== -1) {
         res.body = JSON.parse(res.body);
       }
     }
     if (typeof cb === 'function') {
-      cb.call(err ? err : res, err, res.body, res.headers);
+      cb.call(res, err ? err : null, res.body, res.headers);
     }
     return err ? err : res;
   }
