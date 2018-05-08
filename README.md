@@ -1,7 +1,10 @@
 # easily use http restful API
 ```
-  方便的使用http的GET/POST/PUT/DELETE
+  方便快捷的使用http的GET/POST/PUT/DELETE
   安装方法: npm install net-helper -S
+```
+```js
+  // 使用demo
   const shttp = require('net-helper').shttp;
   shttp
     .post('http://www.baidu.com')
@@ -23,7 +26,7 @@
 - patch() patch请求
 - put() put请求
 - delete() delete请求
-- set() 设置请求头(可以设置表单文件的提交方式)
+- header() 设置请求头(可以设置表单文件的提交方式)
 - attach() 上传文件
 - query() 设置search字符串
 - send() 设置请求的body数据(options.json一定为true!!!)

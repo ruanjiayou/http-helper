@@ -53,13 +53,13 @@ class rp {
   }
   /**
    * 设置get请求的search 不能直接传k1=v1&k2=v2
-   * @param {string|object} o 请求的search部分
+   * @param {string|object} v1 请求的search部分
    */
-  query(o) {
+  query(v1, v2) {
     if (typeof v1 === 'string' && typeof v2 === 'string') {
       this.qs[v1] = v2;
     } else {
-      this.qs = o;
+      this.qs = v1;
     }
     return this;
   }
