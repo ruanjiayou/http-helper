@@ -86,17 +86,16 @@ class rp {
       method: this.method,
       headers: this.headers,
       simple: false,
-      resolveWithFullResponse: true,
-      options: {}
+      resolveWithFullResponse: true
     };
     try {
       // 表单及文件处理
       let type = opts.headers['Content-Type'];
       if (type === 'multipart/form-data') {
-        opts.options.formData = this.body;
+        opts.formData = this.body;
         for (let k in this.files) {
           let filename = path.basename(this.files[k]);
-          opts.options.formData[k] = {
+          opts.formData[k] = {
             value: fs.createReadStream(this.files[k]),
             options: {
               filename: filename,
@@ -105,10 +104,10 @@ class rp {
           };
         }
       } else if (opts.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-        opts.options.form = this.body;
+        opts.form = this.body;
       } else {
-        opts.options.body = this.body;
-        opts.options.json = true;
+        opts.body = this.body;
+        opts.json = true;
       }
       res = await request(opts);
     } catch (e) {
