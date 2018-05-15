@@ -4,6 +4,7 @@ const getHTML = require('./lib/getHTML');
 const fs = require('fs');
 const path = require('path');
 const mime = require('mime');
+const qs = require('qs');
 
 class rp {
   constructor(url, method = 'GET') {
@@ -80,9 +81,9 @@ class rp {
     return this;
   }
   async end(cb) {
-    let res = {}, err = null;
+    let res = {}, err = null, querystring = qs.stringify(this.qs);
     let opts = {
-      uri: this.uri,
+      uri: `${this.uri}?${querystring}`,
       method: this.method,
       headers: this.headers,
       simple: false,
