@@ -1,6 +1,6 @@
 {
   "name": "net-helper",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "方便的使用http的GET/POST/PUT/DELETE",
   "main": "index.js",
   "scripts": {
