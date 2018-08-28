@@ -159,5 +159,6 @@ const shttp = {
 
 module.exports = {
   isOnline,
+  getHTML,
   shttp
 };
